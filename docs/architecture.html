@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Elder Vision architecture</title>
+<style>
+:root{color-scheme:light dark}
+body{margin:0;font-family:var(--font-sans,system-ui,sans-serif);font-size:14px;line-height:1.5}
+figure{margin:0 0 28px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+figcaption{margin-top:8px;font-size:13px;opacity:.8}
+.panel{fill:none;stroke:var(--border,#8884);stroke-width:1.2;stroke-dasharray:5 5}
+.box{fill:var(--card,transparent);stroke:var(--border,#8886);stroke-width:1.3}
+.box.hot{stroke:var(--info,#3b82f6);stroke-width:1.8}
+.t{font-size:12.5px;font-weight:600;fill:currentColor}
+.s{font-size:11.5px;fill:currentColor;opacity:.72}
+.h{font-size:11px;letter-spacing:.06em;font-weight:600;fill:currentColor;opacity:.6}
+.l{font-size:11px;fill:currentColor;opacity:.8}
+.l.hot{fill:var(--info,#3b82f6);opacity:1}
+.ln{fill:none;stroke:currentColor;stroke-width:1.5}
+.ln.hot{stroke:var(--info,#3b82f6);stroke-width:1.9}
+.ln.dash{stroke-dasharray:4 4;opacity:.75}
+.mk path{fill:currentColor}
+#ah path{fill:var(--info,#3b82f6)}
+ul{margin:6px 0 0;padding-left:18px} li{margin:3px 0}
+</style></head><body>
+<figure>
+<svg viewBox="0 0 800 545" role="img" aria-label="The phone streams mic audio straight to AssemblyAI speech-to-text and sends camera frames to a Node server, which holds both API keys and calls Gemini and AssemblyAI text-to-speech; Gemini's answer is checked by server guards and spoken back through the phone speaker.">
+<defs>
+<marker class="mk" id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+<marker class="mk" id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="panel" x="2" y="36" width="274" height="496" rx="10"/>
+<rect class="panel" x="326" y="36" width="150" height="496" rx="10"/>
+<rect class="panel" x="526" y="36" width="270" height="496" rx="10"/>
+<text class="h" x="10" y="26">PHONE · Capacitor + WebView</text>
+<text class="h" x="326" y="26">SERVER · holds the keys</text>
+<text class="h" x="526" y="26">CLOUD APIs</text>
+<rect class="box" x="44" y="50" width="222" height="86" rx="6"/>
+<text class="t" x="54" y="80">Microphone → AudioWorklet</text>
+<text class="s" x="54" y="97">one always-on speech socket</text>
+<text class="s" x="54" y="114">keeps streaming while she talks</text>
+<rect class="box" x="44" y="160" width="222" height="64" rx="6"/>
+<text class="t" x="54" y="179">Wake word + intents</text>
+<text class="s" x="54" y="196">“Hey Iris …”, or a clear command</text>
+<text class="s" x="54" y="213">routes it: look / meds / guide / stop</text>
+<rect class="box hot" x="44" y="252" width="222" height="64" rx="6"/>
+<text class="t" x="54" y="271">Camera + sensors</text>
+<text class="s" x="54" y="288">~3 s rolling frame buffer</text>
+<text class="s" x="54" y="305">gyro heading · phone tilt</text>
+<rect class="box hot" x="44" y="340" width="222" height="80" rx="6"/>
+<text class="t" x="54" y="358">Live / guide loop</text>
+<text class="s" x="54" y="376">only calls out if you moved</text>
+<text class="s" x="54" y="392">or ~10 s passed</text>
+<text class="s" x="54" y="410">carries memory, goal, hazard</text>
+<rect class="box" x="44" y="452" width="222" height="64" rx="6"/>
+<text class="t" x="54" y="471">Speaker queue</text>
+<text class="s" x="54" y="488">URGENT cuts in, stale dropped</text>
+<text class="s" x="54" y="505">near-duplicate lines suppressed</text>
+<rect class="box" x="334" y="104" width="134" height="40" rx="6"/>
+<text class="t" x="344" y="128">/api/stt-token</text>
+<rect class="box" x="334" y="160" width="134" height="64" rx="6"/>
+<text class="t" x="344" y="179">/api/describe</text>
+<text class="s" x="344" y="196">describe · read</text>
+<text class="s" x="344" y="213">find · ask · route</text>
+<rect class="box" x="334" y="252" width="134" height="64" rx="6"/>
+<text class="t" x="344" y="271">/api/meds</text>
+<text class="s" x="344" y="288">model copies label</text>
+<text class="s" x="344" y="305">code writes speech</text>
+<rect class="box hot" x="334" y="340" width="134" height="80" rx="6"/>
+<text class="t" x="344" y="358">/api/live</text>
+<text class="s" x="344" y="376">guards fix unsafe</text>
+<text class="s" x="344" y="392">lines before they</text>
+<text class="s" x="344" y="410">are spoken</text>
+<rect class="box" x="334" y="452" width="134" height="64" rx="6"/>
+<text class="t" x="344" y="480">/api/speak</text>
+<text class="s" x="344" y="496">text → audio</text>
+<rect class="box" x="534" y="50" width="252" height="90" rx="6"/>
+<text class="t" x="544" y="82">AssemblyAI streaming STT</text>
+<text class="s" x="544" y="99">live transcripts of the mic</text>
+<text class="s" x="544" y="116">free tier: 5 new sessions / min</text>
+<rect class="box" x="534" y="160" width="252" height="64" rx="6"/>
+<text class="t" x="544" y="179">Gemini · fast tier</text>
+<text class="s" x="544" y="196">describe · find · ask · walk</text>
+<text class="s" x="544" y="213">flash-lite, about 1 s</text>
+<rect class="box" x="534" y="252" width="252" height="64" rx="6"/>
+<text class="t" x="544" y="271">Gemini · strong tier</text>
+<text class="s" x="544" y="288">read · scenic · route · medicine labels</text>
+<text class="s" x="544" y="305">+ one arrival check per trip</text>
+<rect class="box hot" x="534" y="340" width="252" height="80" rx="6"/>
+<text class="t" x="544" y="358">Gemini · live tier</text>
+<text class="s" x="544" y="376">sees a 3-frame clip + notes</text>
+<text class="s" x="544" y="392">answers in JSON, about 1 s</text>
+<text class="s" x="544" y="410">no thinking (too slow)</text>
+<rect class="box" x="534" y="452" width="252" height="64" rx="6"/>
+<text class="t" x="544" y="471">AssemblyAI text-to-speech</text>
+<text class="s" x="544" y="488">voice aai-audrey</text>
+<text class="s" x="544" y="505">returns 24 kHz WAV</text>
+<path class="ln" d="M266 66 H534" marker-end="url(#a)"/>
+<text class="l" x="400" y="60" text-anchor="middle">mic audio (wss, direct)</text>
+<path class="ln" d="M534 92 H266" marker-end="url(#a)"/>
+<text class="l" x="400" y="86" text-anchor="middle">transcripts</text>
+<path class="ln dash" d="M266 122 H334" marker-end="url(#a)"/>
+<text class="l" x="300" y="117" text-anchor="middle">token</text>
+<path class="ln dash" d="M468 122 H534" marker-end="url(#a)"/>
+<text class="l" x="501" y="117" text-anchor="middle">mint</text>
+<path class="ln" d="M155 136 V160" marker-end="url(#a)"/>
+<text class="l" x="162" y="152" text-anchor="start">text</text>
+<path class="ln" d="M266 192 H334" marker-end="url(#a)" marker-start="url(#a)"/>
+<text class="l" x="300" y="187" text-anchor="middle">frame/text</text>
+<path class="ln" d="M468 192 H534" marker-end="url(#a)" marker-start="url(#a)"/>
+<text class="l" x="501" y="187" text-anchor="middle">img/text</text>
+<path class="ln" d="M266 284 H334" marker-end="url(#a)" marker-start="url(#a)"/>
+<text class="l" x="300" y="279" text-anchor="middle">photos</text>
+<path class="ln" d="M468 284 H534" marker-end="url(#a)" marker-start="url(#a)"/>
+<text class="l" x="501" y="279" text-anchor="middle">img/JSON</text>
+<path class="ln hot" d="M266 380 H334" marker-end="url(#ah)" marker-start="url(#ah)"/>
+<text class="l hot" x="300" y="375" text-anchor="middle">clip</text>
+<path class="ln hot" d="M468 380 H534" marker-end="url(#ah)" marker-start="url(#ah)"/>
+<text class="l hot" x="501" y="375" text-anchor="middle">clip</text>
+<path class="ln dash" d="M468 352 H510 V300 H534" marker-end="url(#a)"/>
+<text class="l" x="506" y="334" text-anchor="end">verify</text>
+<path class="ln" d="M266 472 H334" marker-end="url(#a)"/>
+<text class="l" x="300" y="467" text-anchor="middle">text</text>
+<path class="ln" d="M334 498 H266" marker-end="url(#a)"/>
+<text class="l" x="300" y="493" text-anchor="middle">WAV</text>
+<path class="ln" d="M468 472 H534" marker-end="url(#a)"/>
+<text class="l" x="501" y="467" text-anchor="middle">text</text>
+<path class="ln" d="M534 498 H468" marker-end="url(#a)"/>
+<text class="l" x="501" y="493" text-anchor="middle">WAV</text>
+<path class="ln hot" d="M155 316 V340" marker-end="url(#ah)"/>
+<text class="l hot" x="162" y="332" text-anchor="start">clip</text>
+<path class="ln hot" d="M155 420 V452" marker-end="url(#ah)"/>
+<text class="l hot" x="162" y="440" text-anchor="start">say</text>
+<path class="ln" d="M44 192 H26 V484 H44" marker-end="url(#a)"/>
+<path class="ln" d="M26 380 H44" marker-end="url(#a)"/>
+<text class="l" transform="translate(15 340) rotate(-90)" text-anchor="middle">commands · answers</text>
+</svg>
+<figcaption>The phone is the loop: it hears, watches and speaks. The server exists to hold the Gemini and AssemblyAI keys and to put safety checks between Gemini's words and the speaker. Only the microphone audio skips the server, and only after it has fetched a short-lived token. <span style="color:var(--info,#3b82f6)">Blue</span> is the continuous-narration path; dashed lines are tokens and the once-per-trip arrival check.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 800 190" role="img" aria-label="One live-narration tick: a motion gate decides whether to look, a three-frame clip goes to Gemini, server guards rewrite unsafe lines, and the announce step decides whether to interrupt; memory, hazard and spoken lines feed the next request.">
+<defs>
+<marker class="mk" id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="box" x="0" y="18" width="140" height="106" rx="6"/>
+<text class="t" x="10" y="50">1  Motion gate</text>
+<text class="s" x="10" y="66">compare small thumbnails</text>
+<text class="s" x="10" y="84">moved, or ~10 s passed</text>
+<text class="s" x="10" y="100">else: silence</text>
+<path class="ln" d="M140 71 H165" marker-end="url(#a2)"/>
+<rect class="box" x="165" y="18" width="140" height="106" rx="6"/>
+<text class="t" x="175" y="50">2  Clip</text>
+<text class="s" x="175" y="66">3 frames over ~2 s</text>
+<text class="s" x="175" y="84">+ turn angle between</text>
+<text class="s" x="175" y="100">frames from the gyro</text>
+<path class="ln" d="M305 71 H330" marker-end="url(#a2)"/>
+<rect class="box hot" x="330" y="18" width="140" height="106" rx="6"/>
+<text class="t" x="340" y="50">3  Gemini live tier</text>
+<text class="s" x="340" y="66">fills facts first:</text>
+<text class="s" x="340" y="84">view, hazard, goal side</text>
+<text class="s" x="340" y="100">then the line to say</text>
+<path class="ln" d="M470 71 H495" marker-end="url(#a2)"/>
+<rect class="box" x="495" y="18" width="140" height="106" rx="6"/>
+<text class="t" x="505" y="41">4  Server guards</text>
+<text class="s" x="505" y="58">blurry → stand still</text>
+<text class="s" x="505" y="75">never toward blocked</text>
+<text class="s" x="505" y="92">near hazard → urgent</text>
+<text class="s" x="505" y="109">arrival: 2nd model</text>
+<path class="ln" d="M635 71 H660" marker-end="url(#a2)"/>
+<rect class="box" x="660" y="18" width="140" height="106" rx="6"/>
+<text class="t" x="670" y="41">5  Announce</text>
+<text class="s" x="670" y="58">URGENT: cuts in</text>
+<text class="s" x="670" y="75">normal: waits</text>
+<text class="s" x="670" y="92">stale: dropped</text>
+<text class="s" x="670" y="109">repeats: skipped</text>
+<path class="ln dash" d="M565.0 124 V152 H235.0 V124" marker-end="url(#a2)"/>
+<text class="l" x="400.0" y="174" text-anchor="middle">memory · active hazard · lines already said go into the next request</text>
+</svg>
+<figcaption>One tick of live narration. Standing still costs nothing: no frames are sent until the picture changes. The model's answer never reaches the speaker unchecked.</figcaption>
+</figure>
+
+<ul>
+<li><b>Voice commands</b> go mic → AssemblyAI STT → wake-word/intent router → <code>/api/describe</code> or <code>/api/meds</code> → speaker. Medicine answers are assembled in <code>meds.js</code> from copied label text, so nothing unprinted is spoken.</li>
+<li><b>Guide mode</b> is the same live loop with a goal set: a directive about every 1.5 s, until the arrival check passes.</li>
+<li><b>Android</b> is a thin Capacitor shell that loads the UI from the server (<code>adb reverse</code> in testing), so keys never ship in the APK.</li>
+<li><b>Test rig</b> (<code>sim/</code>): a three.js room is the camera and synthesized speech is the microphone, so answers can be scored against ground truth.</li>
+</ul>
+</body></html>
